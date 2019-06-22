@@ -1,4 +1,5 @@
 @file:Suppress("UNUSED_PARAMETER")
+
 package lesson2.task1
 
 import lesson1.task1.discriminant
@@ -62,7 +63,13 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * Мой возраст. Для заданного 0 < n < 200, рассматриваемого как возраст человека,
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
-fun ageDescription(age: Int): String = TODO()
+fun ageDescription(age: Int): String {
+    return when {
+        age % 100 in 11..14 || age % 10 in 5..9 || age % 10 == 0 -> "$age лет"
+        age % 10 == 1 -> "$age год"
+        else -> "$age года"
+    }
+}
 
 /**
  * Простая
@@ -73,7 +80,60 @@ fun ageDescription(age: Int): String = TODO()
  */
 fun timeForHalfWay(t1: Double, v1: Double,
                    t2: Double, v2: Double,
-                   t3: Double, v3: Double): Double = TODO()
+                   t3: Double, v3: Double): Double {
+    /*Case 1(without cycles)*/
+//    val t1v1Length = t1 * v1
+//    val t2v2Length = t2 * v2
+//    val t3v3Length = t3 * v3
+//    val halfWayLength = (t1v1Length + t2v2Length + t3v3Length) / 2
+//    var resultTime = 0.0
+//    when {
+//        t1v1Length > halfWayLength -> resultTime = halfWayLength/v1
+//        t1v1Length == halfWayLength -> resultTime = t1
+//        else -> {
+//            resultTime += t1
+//            val restAfterT1 = halfWayLength - t1v1Length
+//            when {
+//                t2v2Length > restAfterT1 -> resultTime += restAfterT1/v2
+//                t2v2Length == restAfterT1 -> resultTime += t2
+//                else -> {
+//                    resultTime += t2
+//                    val restAfterT2 = restAfterT1 - t2v2Length
+//                    when {
+//                        t3v3Length > restAfterT2 -> resultTime += restAfterT2/v3
+//                        else -> Double.NaN
+//                    }
+//                }
+//            }
+//        }
+//    }
+    /*Case 2 (doesn't depend on intervals count)*/
+    val wayLengths = arrayOf(t1 * v1, t2 * v2, t3 * v3)
+    val v = arrayOf(v1, v2, v3)
+    val t = arrayOf(t1, t2, t3)
+    var restWayLength = wayLengths.sum() / 2
+    var resultTime = 0.0
+    var i = 0
+    while (i < wayLengths.size && restWayLength > 0.0) {
+        when {
+            wayLengths[i] > restWayLength -> {
+                resultTime += restWayLength / v[i]
+                restWayLength = 0.0
+            }
+            wayLengths[i] == restWayLength -> {
+                resultTime += t[i]
+                restWayLength = 0.0
+            }
+            else -> {
+                resultTime += t[i]
+                restWayLength -= wayLengths[i]
+            }
+        }
+        i += 1
+    }
+
+    return resultTime;
+}
 
 /**
  * Простая
@@ -86,7 +146,16 @@ fun timeForHalfWay(t1: Double, v1: Double,
  */
 fun whichRookThreatens(kingX: Int, kingY: Int,
                        rookX1: Int, rookY1: Int,
-                       rookX2: Int, rookY2: Int): Int = TODO()
+                       rookX2: Int, rookY2: Int): Int {
+    var res = 0
+    if (rookX1 == kingX || rookY1 == kingY) res = 1
+    if (rookX2 == kingX || rookY2 == kingY) {
+        if (res == 1) res = 3
+        else res = 2
+    }
+    return res
+}
+
 
 /**
  * Простая
@@ -100,7 +169,15 @@ fun whichRookThreatens(kingX: Int, kingY: Int,
  */
 fun rookOrBishopThreatens(kingX: Int, kingY: Int,
                           rookX: Int, rookY: Int,
-                          bishopX: Int, bishopY: Int): Int = TODO()
+                          bishopX: Int, bishopY: Int): Int {
+    var res = 0
+    if (kingX == rookX || kingY == rookY) res = 1
+    if (Math.abs(kingX - bishopX) == Math.abs(kingY - bishopY)) {
+        if (res == 1) res = 3
+        else res = 2
+    }
+    return res
+}
 
 /**
  * Простая
@@ -110,7 +187,19 @@ fun rookOrBishopThreatens(kingX: Int, kingY: Int,
  * прямоугольным (вернуть 1) или тупоугольным (вернуть 2).
  * Если такой треугольник не существует, вернуть -1.
  */
-fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
+fun triangleKind(a: Double, b: Double, c: Double): Int {
+    if ((a < b + c) && (b < a + c) && (c < a + b)){
+        val aPow2 = Math.pow(a, 2.0)
+        val bPow2 = Math.pow(b, 2.0)
+        val cPow2 = Math.pow(c, 2.0)
+        return when {
+            (aPow2 < bPow2 + cPow2) && (bPow2 < aPow2 + cPow2) && (cPow2 < aPow2 + bPow2) -> 0
+            (aPow2 == bPow2 + cPow2) || (bPow2 == aPow2 + cPow2) || (cPow2 == aPow2 + bPow2) -> 1
+            else -> 2
+        }
+    }
+    return -1
+}
 
 /**
  * Средняя
@@ -120,4 +209,13 @@ fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = TODO()
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
+    return when {
+        b < c || a > d -> -1
+        c >= a && b >= d -> d - c
+        c <= a && b <= d -> b - a
+        c >= a && b <= d -> b - c
+        c <= a && b >= d -> d - a
+        else -> -1
+    }
+}
