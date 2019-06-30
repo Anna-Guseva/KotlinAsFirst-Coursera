@@ -1,6 +1,8 @@
 @file:Suppress("UNUSED_PARAMETER")
+
 package lesson3.task1
 
+import kotlin.math.PI
 import kotlin.math.sqrt
 
 /**
@@ -38,7 +40,7 @@ fun isPrime(n: Int): Boolean {
  */
 fun isPerfect(n: Int): Boolean {
     var sum = 1
-    for (m in 2..n/2) {
+    for (m in 2..n / 2) {
         if (n % m > 0) continue
         sum += m
         if (sum > n) break
@@ -66,7 +68,16 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun digitNumber(n: Int): Int = TODO()
+fun digitNumber(n: Int): Int {
+    var count = 1
+    var number = n
+    while (number > 0) {
+        number /= 10
+        if (number > 0)
+            count++
+    }
+    return count
+}
 
 /**
  * Простая
@@ -74,7 +85,19 @@ fun digitNumber(n: Int): Int = TODO()
  * Найти число Фибоначчи из ряда 1, 1, 2, 3, 5, 8, 13, 21, ... с номером n.
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
-fun fib(n: Int): Int = TODO()
+fun fib(n: Int): Int {
+    var previousNumber = 1
+    var currentNumber = 1
+
+    for (i in 3..n) {
+        currentNumber += previousNumber
+        previousNumber = currentNumber - previousNumber
+    }
+
+    return currentNumber
+//    return if (n <= 2) 1
+//    else fib(n - 1) + fib(n - 2)
+}
 
 /**
  * Простая
@@ -82,7 +105,30 @@ fun fib(n: Int): Int = TODO()
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun lcm(m: Int, n: Int): Int = TODO()
+fun lcm(m: Int, n: Int): Int {
+    if (m == 0 || n == 0) return -1
+    return (m * n) / nod(m, n)
+// It works very long
+//    var minNumber = m
+//    var maxNumber = n
+//    var res = 1
+//    if (n < m) {
+//        minNumber = n
+//        maxNumber = m
+//    }
+//    for (s in 2..maxNumber) {
+//        while (minNumber % s == 0 || maxNumber % s == 0) {
+//            res *= s
+//            if (minNumber % s == 0)
+//                minNumber /= s
+//            if (maxNumber % s == 0)
+//                maxNumber /= s
+//        }
+//
+//        if (minNumber == 1 && maxNumber == 1) return res
+//    }
+//    return res
+}
 
 /**
  * Простая
@@ -105,7 +151,32 @@ fun maxDivisor(n: Int): Int = TODO()
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean = TODO()
+fun isCoPrime(m: Int, n: Int): Boolean {
+    if (n < 2 || m < 2) return true
+    if (n % 2 == 0 && m % 2 == 0) return false
+    if (m % n == 0 || n % m == 0) return false
+    if (nod(m, n) == 1) return true
+
+    return false
+}
+
+fun nod(m: Int, n: Int): Int {
+    var minNumber = m
+    var maxNumber = n
+
+    if (n < m) {
+        minNumber = n
+        maxNumber = m
+    }
+
+    while (maxNumber % minNumber != 0) {
+        val res = maxNumber % minNumber
+        maxNumber = minNumber
+        minNumber = res
+    }
+
+    return minNumber
+}
 
 /**
  * Простая
@@ -141,7 +212,37 @@ fun collatzSteps(x: Int): Int = TODO()
  * sin(x) = x - x^3 / 3! + x^5 / 5! - x^7 / 7! + ...
  * Нужную точность считать достигнутой, если очередной член ряда меньше eps по модулю
  */
-fun sin(x: Double, eps: Double): Double = TODO()
+fun sin(x: Double, eps: Double): Double {
+
+    var angleInRad = x
+    if (angleInRad > PI) {
+        val tmp = angleInRad / PI
+        angleInRad = (tmp - (tmp / 2).toInt() * 2) * PI
+    }
+
+    var res = angleInRad
+    if (angleInRad < eps) {
+        println("sin $x is: $res")
+        return res
+    }
+
+    var currentMember = angleInRad
+    var n = 3
+
+    while (Math.abs(currentMember) >= eps) {
+
+        currentMember = -1 * currentMember * angleInRad * angleInRad / (n * (n - 1))
+        if (Math.abs(currentMember) < eps){
+            println("sin $x is: $res")
+            return res
+        }
+        res += currentMember
+        n += 2
+    }
+
+    println("sin $x is: $res")
+    return res
+}
 
 /**
  * Средняя
